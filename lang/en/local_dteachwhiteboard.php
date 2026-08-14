@@ -24,26 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Collaborative Whiteboard';
-
-$string['settings'] = 'Settings';
-$string['serviceurl'] = 'Service URL';
-$string['serviceurl_desc'] = 'Base URL of the whiteboard service. Leave the default unless you are testing against another environment.';
-
-$string['subscription'] = 'Your subscription';
-$string['notconnected'] = 'This site is not connected yet. Start the trial to add the whiteboard to your activity chooser.';
-$string['trialdaysleft'] = 'Trial: {$a} days left';
-$string['trialrunning'] = 'Trial running';
-$string['paiddaysleft'] = 'Paid plan: {$a} days left';
-$string['paidrunning'] = 'Paid plan active';
-$string['expired'] = 'Your plan has ended. Teachers can no longer open a whiteboard.';
-$string['toolready'] = 'Whiteboard is active and available in the activity chooser.';
-
-$string['starttrial'] = 'Start trial';
-$string['startpaid'] = 'Start with paid plan';
-$string['upgrade'] = 'Upgrade to paid plan';
 $string['billing'] = 'Billing';
 $string['contactus'] = 'Contact us';
-
+$string['expired'] = 'Your plan has ended. Teachers can no longer open a whiteboard.';
+$string['notconnected'] = 'This site is not connected yet. Start the trial to add the whiteboard to your activity chooser.';
+$string['paiddaysleft'] = 'Paid plan: {$a} days left';
+$string['paidrunning'] = 'Paid plan active';
+$string['pluginname'] = 'Collaborative Whiteboard';
+$string['privacy:metadata:dteachwhiteboard'] = 'This plugin sends the address of this site to the whiteboard service to register it and read its plan. It sends no personal data: whiteboard activities are launched by the External tool (LTI) module, which declares what it transmits.';
+$string['privacy:metadata:dteachwhiteboard:siteurl'] = 'The address of this Moodle site, used to identify the subscription it holds.';
+$string['privacy:metadata:nullproviderreason'] = 'This plugin stores only site-level settings: the token identifying this site to the whiteboard service, and its registration address. It stores no data about any user.';
 $string['servicefailed'] = 'The whiteboard service could not be reached: {$a}';
+$string['serviceurl'] = 'Service URL';
+$string['serviceurl_desc'] = 'Base URL of the whiteboard service. Leave the default unless you are testing against another environment.';
+$string['settings'] = 'Settings';
+$string['startpaid'] = 'Start with paid plan';
+$string['starttrial'] = 'Start trial';
+$string['subscription'] = 'Your subscription';
 $string['tokenrejected'] = 'This site\'s token is no longer valid. Start again to get a new one.';
+$string['toolready'] = 'Whiteboard is active and available in the activity chooser.';
+$string['trialdaysleft'] = 'Trial: {$a} days left';
+$string['trialrunning'] = 'Trial running';
+$string['upgrade'] = 'Upgrade to paid plan';
