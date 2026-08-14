@@ -24,9 +24,8 @@ namespace local_dteachwhiteboard;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class lti_tool {
-
     /**
-     * Activate the registered tool and put it in the activity chooser.
+     * Activate the registered tool, offering it in the activity chooser while the plan runs.
      *
      * Dynamic Registration always leaves the tool pending, hardcodes `coursevisible` to
      * preconfigured and the launch container to an embed, ignoring what the tool asked
@@ -38,9 +37,10 @@ class lti_tool {
      * base URL, told apart only by the client id the platform minted per registration.
      *
      * @param string $clientid client id of the registration this site owns
+     * @param bool $available whether the plan still allows new whiteboards
      * @return bool whether the tool exists and is now ready to use
      */
-    public static function activate(string $clientid): bool {
+    public static function activate(string $clientid, bool $available): bool {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/mod/lti/locallib.php');
 
@@ -49,9 +49,13 @@ class lti_tool {
             return false;
         }
 
+        // Hiding the tool stops teachers adding a whiteboard they could not open anyway;
+        // whiteboards already in a course stay, and the service refuses their launch.
+        $coursevisible = $available ? LTI_COURSEVISIBLE_ACTIVITYCHOOSER : LTI_COURSEVISIBLE_NO;
+
         $typeconfig = lti_get_type_config($record->id);
         $ready = (int) $record->state === LTI_TOOL_STATE_CONFIGURED
-            && (int) $record->coursevisible === LTI_COURSEVISIBLE_ACTIVITYCHOOSER
+            && (int) $record->coursevisible === $coursevisible
             && (int) ($typeconfig['launchcontainer'] ?? 0) === LTI_LAUNCH_CONTAINER_WINDOW;
         if ($ready) {
             return true;
@@ -62,7 +66,7 @@ class lti_tool {
         // applied by lti_prepare_type_for_save().
         $type->state = LTI_TOOL_STATE_CONFIGURED;
         $config = new \stdClass();
-        $config->lti_coursevisible = LTI_COURSEVISIBLE_ACTIVITYCHOOSER;
+        $config->lti_coursevisible = $coursevisible;
         $config->lti_launchcontainer = LTI_LAUNCH_CONTAINER_WINDOW;
         lti_update_type($type, $config);
 

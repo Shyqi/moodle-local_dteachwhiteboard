@@ -24,11 +24,12 @@ namespace local_dteachwhiteboard;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class service_exception extends \moodle_exception {
-
     /** @var string Machine-readable code from the service, empty when it sent none. */
     public $servicecode;
 
     /**
+     * Build the exception from what the service answered with.
+     *
      * @param string $servicecode code the service answered with
      * @param string $detail human-readable reason, shown to the admin
      */

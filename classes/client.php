@@ -24,7 +24,6 @@ namespace local_dteachwhiteboard;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class client {
-
     /** @var int Seconds to wait for the service before giving up. */
     private const TIMEOUT = 10;
 

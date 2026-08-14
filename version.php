@@ -26,7 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_dteachwhiteboard';
 $plugin->version = 2026081400;
-// LTI Dynamic Registration, which the subscription page drives, landed in Moodle 4.0.
-$plugin->requires = 2022112800;
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->release = 'v0.1.0';
+// Moodle 4.2, the first release with single_button::BUTTON_PRIMARY.
+$plugin->requires = 2023042400;
+$plugin->supported = [402, 502];
+$plugin->maturity = MATURITY_BETA;
+$plugin->release = '0.1.0';

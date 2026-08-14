@@ -28,7 +28,10 @@ require_once($CFG->libdir . '/adminlib.php');
 use local_dteachwhiteboard\client;
 use local_dteachwhiteboard\lti_tool;
 
+/** Component name, as every get_config() and get_string() call on this page needs it. */
 const LOCAL_DTEACHWHITEBOARD = 'local_dteachwhiteboard';
+
+/** Where the "Contact us" button writes to. */
 const LOCAL_DTEACHWHITEBOARD_CONTACT = 'contact@dteach.net';
 
 admin_externalpage_setup('local_dteachwhiteboard_subscription');
@@ -37,19 +40,6 @@ $action = optional_param('action', '', PARAM_ALPHA);
 $pageurl = new moodle_url('/local/dteachwhiteboard/subscription.php');
 $client = new client();
 $token = (string) get_config(LOCAL_DTEACHWHITEBOARD, 'token');
-
-/**
- * Whole days left before a plan ends, or null for a plan that never ends on its own.
- *
- * @param string|null $endsat ISO 8601 timestamp
- * @return int|null
- */
-function local_dteachwhiteboard_days_left(?string $endsat): ?int {
-    if (empty($endsat) || ($end = strtotime($endsat)) === false) {
-        return null;
-    }
-    return max(0, (int) ceil(($end - time()) / DAYSECS));
-}
 
 if ($action !== '') {
     require_sesskey();
@@ -92,12 +82,16 @@ try {
     unset_config('token', LOCAL_DTEACHWHITEBOARD);
     unset_config('registrationurl', LOCAL_DTEACHWHITEBOARD);
     unset_config('pendingcheckout', LOCAL_DTEACHWHITEBOARD);
-    redirect($pageurl, get_string('tokenrejected', LOCAL_DTEACHWHITEBOARD), null,
-        \core\output\notification::NOTIFY_WARNING);
+    redirect(
+        $pageurl,
+        get_string('tokenrejected', LOCAL_DTEACHWHITEBOARD),
+        null,
+        \core\output\notification::NOTIFY_WARNING
+    );
 }
 
 if ($status !== null && $status['connected']) {
-    lti_tool::activate((string) $status['client_id']);
+    lti_tool::activate((string) $status['client_id'], $status['state'] !== 'expired');
     if (get_config(LOCAL_DTEACHWHITEBOARD, 'pendingcheckout')) {
         unset_config('pendingcheckout', LOCAL_DTEACHWHITEBOARD);
         redirect($client->checkout_url($token, $pageurl->out(false), $pageurl->out(false)));
@@ -105,7 +99,10 @@ if ($status !== null && $status['connected']) {
 }
 
 $state = $status === null ? 'not_connected' : $status['state'];
-$daysleft = $status === null ? null : local_dteachwhiteboard_days_left($status['plan']['ends_at'] ?? null);
+// A plan with no end date never ends on its own, so it has no day count to show.
+$endsat = $status === null ? null : ($status['plan']['ends_at'] ?? null);
+$end = empty($endsat) ? false : strtotime($endsat);
+$daysleft = $end === false ? null : max(0, (int) ceil(($end - time()) / DAYSECS));
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('subscription', LOCAL_DTEACHWHITEBOARD));
@@ -164,7 +161,7 @@ echo html_writer::link(
 );
 echo html_writer::end_div();
 
-if ($state !== 'not_connected') {
+if ($state === 'trial' || $state === 'paid') {
     echo $OUTPUT->notification(get_string('toolready', LOCAL_DTEACHWHITEBOARD), \core\output\notification::NOTIFY_INFO);
 }
 
