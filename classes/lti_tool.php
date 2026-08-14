@@ -33,23 +33,19 @@ class lti_tool {
      * for (see mod/lti/classes/local/ltiopenid/registration_helper.php). Idempotent, so
      * the subscription page can call it on every load.
      *
-     * @param string $serviceurl base URL of the whiteboard service
+     * The client id is what names our tool: dteach serves several products from one
+     * launch URL, so a site running more than one of them has several tools sharing a
+     * base URL, told apart only by the client id the platform minted per registration.
+     *
+     * @param string $clientid client id of the registration this site owns
      * @return bool whether the tool exists and is now ready to use
      */
-    public static function activate(string $serviceurl): bool {
+    public static function activate(string $clientid): bool {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/mod/lti/locallib.php');
 
-        $launchurl = rtrim($serviceurl, '/') . '/api/lti/launch/';
-        $record = null;
-        // baseurl is a TEXT column, which cannot be matched in a WHERE clause on every database.
-        foreach ($DB->get_records('lti_types', ['ltiversion' => LTI_VERSION_1P3]) as $candidate) {
-            if ($candidate->baseurl === $launchurl) {
-                $record = $candidate;
-                break;
-            }
-        }
-        if ($record === null) {
+        $record = $DB->get_record('lti_types', ['clientid' => $clientid]);
+        if ($record === false) {
             return false;
         }
 

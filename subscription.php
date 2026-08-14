@@ -97,7 +97,7 @@ try {
 }
 
 if ($status !== null && $status['connected']) {
-    lti_tool::activate((string) get_config(LOCAL_DTEACHWHITEBOARD, 'serviceurl'));
+    lti_tool::activate((string) $status['client_id']);
     if (get_config(LOCAL_DTEACHWHITEBOARD, 'pendingcheckout')) {
         unset_config('pendingcheckout', LOCAL_DTEACHWHITEBOARD);
         redirect($client->checkout_url($token, $pageurl->out(false), $pageurl->out(false)));
