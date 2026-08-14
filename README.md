@@ -21,8 +21,26 @@ it, puts it in the activity chooser and switches it to a new window afterwards.
 
 ## Requirements
 
-Moodle 4.1 or later, with LTI 1.3 Dynamic Registration.
+Moodle 4.2 or later, with LTI 1.3 Dynamic Registration.
+
+## Subscription
+
+This plugin is free and GPL, but the whiteboard itself is a hosted service run by
+dteach. Every site starts on a free trial; once it ends, a paid plan is needed for
+teachers to keep opening whiteboards. Plans are bought from the *Your subscription*
+page and billed by dteach, not through Moodle.
+
+## Privacy
+
+The plugin itself stores no personal data, and sends the service nothing but the
+address of your site. Whiteboards are opened by Moodle's External tool (LTI) module,
+which declares separately what it transmits to the tool.
+
+## Support
+
+Bugs and feature requests: open an issue on this repository. Anything else:
+<contact@dteach.net>.
 
 ## License
 
-GNU GPL v3 or later.
+GNU GPL v3 or later. See [LICENSE](LICENSE).
