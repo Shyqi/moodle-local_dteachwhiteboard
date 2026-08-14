@@ -15,10 +15,9 @@ visit *Site administration → Notifications*.
 subscription*, then start the free trial. The page walks the LMS through
 registration and shows the plan afterwards.
 
-Two settings the registration cannot carry, to set by hand on the created tool:
-
-- Tool configuration usage — *Show in activity chooser and as a preconfigured tool*
-- Default launch container — *New window*
+Nothing else to configure. LTI Dynamic Registration always leaves a tool pending,
+shown only as a preconfigured tool and launched in an embed; the plugin activates
+it, puts it in the activity chooser and switches it to a new window afterwards.
 
 ## Requirements
 
