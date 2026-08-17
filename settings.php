@@ -45,7 +45,7 @@ if ($hassiteconfig) {
         'local_dteachwhiteboard/serviceurl',
         new lang_string('serviceurl', 'local_dteachwhiteboard'),
         new lang_string('serviceurl_desc', 'local_dteachwhiteboard'),
-        'https://api.dteach.net',
+        'https://draw-lti.dteach.net',
         PARAM_URL
     ));
     $ADMIN->add('local_dteachwhiteboard', $settings);

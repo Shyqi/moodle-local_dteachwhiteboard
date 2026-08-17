@@ -1,0 +1,76 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_dteachwhiteboard/subscription
+
+    Subscription state of this site and the actions that move it along.
+
+    Context variables required for this template:
+    * statelabel string - short name of the current state
+    * statevariant string - bootstrap colour suffix for the state badge
+    * summary string - one sentence describing the current state
+    * details array - label/value pairs describing the plan and the site
+    * toolready string - shown when teachers can open a whiteboard, empty otherwise
+    * connectsteps string - title of the steps list, empty unless the site is unconnected
+    * steps array - what starting the subscription does, in order
+    * actions string - rendered buttons and links
+
+    Example context (json):
+    {
+        "statelabel": "Trial",
+        "statevariant": "info",
+        "summary": "Trial: 12 days left",
+        "details": [
+            {"label": "Plan", "value": "Whiteboard trial"},
+            {"label": "Ends on", "value": "28 August 2026"}
+        ],
+        "toolready": "Whiteboard is active and available in the activity chooser.",
+        "connectsteps": "",
+        "steps": [],
+        "actions": "<a class=\"btn btn-primary\" href=\"#\">Upgrade to paid plan</a>"
+    }
+}}
+<div class="card mb-3">
+    <div class="card-body">
+        <span class="badge badge-{{statevariant}} bg-{{statevariant}}">{{statelabel}}</span>
+        <p class="lead mt-2 mb-3">{{summary}}</p>
+        <dl class="row mb-0">
+            {{#details}}
+                <dt class="col-sm-3">{{label}}</dt>
+                <dd class="col-sm-9">{{value}}</dd>
+            {{/details}}
+        </dl>
+        {{#toolready}}
+            <div class="alert alert-success mb-0 mt-3" role="status">{{toolready}}</div>
+        {{/toolready}}
+    </div>
+    <div class="card-footer d-flex flex-wrap align-items-center">
+        {{{actions}}}
+    </div>
+</div>
+{{#connectsteps}}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3 class="h5">{{connectsteps}}</h3>
+            <ol class="mb-0">
+                {{#steps}}
+                    <li>{{.}}</li>
+                {{/steps}}
+            </ol>
+        </div>
+    </div>
+{{/connectsteps}}

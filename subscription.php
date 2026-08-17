@@ -34,6 +34,9 @@ const LOCAL_DTEACHWHITEBOARD = 'local_dteachwhiteboard';
 /** Where the "Contact us" button writes to. */
 const LOCAL_DTEACHWHITEBOARD_CONTACT = 'contact@dteach.net';
 
+/** Public page describing the whiteboard, for admins who want more than this page shows. */
+const LOCAL_DTEACHWHITEBOARD_HOMEPAGE = 'https://draw.dteach.net';
+
 admin_externalpage_setup('local_dteachwhiteboard_subscription');
 
 $action = optional_param('action', '', PARAM_ALPHA);
@@ -104,25 +107,48 @@ $endsat = $status === null ? null : ($status['plan']['ends_at'] ?? null);
 $end = empty($endsat) ? false : strtotime($endsat);
 $daysleft = $end === false ? null : max(0, (int) ceil(($end - time()) / DAYSECS));
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('subscription', LOCAL_DTEACHWHITEBOARD));
-
 if ($state === 'trial') {
+    $statelabel = get_string('statetrial', LOCAL_DTEACHWHITEBOARD);
+    $statevariant = 'info';
     $summary = $daysleft === null
         ? get_string('trialrunning', LOCAL_DTEACHWHITEBOARD)
         : get_string('trialdaysleft', LOCAL_DTEACHWHITEBOARD, $daysleft);
 } else if ($state === 'paid') {
+    $statelabel = get_string('statepaid', LOCAL_DTEACHWHITEBOARD);
+    $statevariant = 'success';
     $summary = $daysleft === null
         ? get_string('paidrunning', LOCAL_DTEACHWHITEBOARD)
         : get_string('paiddaysleft', LOCAL_DTEACHWHITEBOARD, $daysleft);
 } else if ($state === 'expired') {
+    $statelabel = get_string('stateexpired', LOCAL_DTEACHWHITEBOARD);
+    $statevariant = 'warning';
     $summary = get_string('expired', LOCAL_DTEACHWHITEBOARD);
 } else {
+    $statelabel = get_string('statenotconnected', LOCAL_DTEACHWHITEBOARD);
+    $statevariant = 'secondary';
     $summary = get_string('notconnected', LOCAL_DTEACHWHITEBOARD);
 }
-echo $OUTPUT->notification($summary, $state === 'paid' || $state === 'trial'
-    ? \core\output\notification::NOTIFY_SUCCESS
-    : \core\output\notification::NOTIFY_INFO);
+
+$details = [];
+if (!empty($status['plan']['name'])) {
+    $details[] = [
+        'label' => get_string('plan', LOCAL_DTEACHWHITEBOARD),
+        'value' => $status['plan']['name'],
+    ];
+}
+if ($end !== false) {
+    $details[] = [
+        'label' => get_string('endson', LOCAL_DTEACHWHITEBOARD),
+        'value' => userdate($end, get_string('strftimedaydate')),
+    ];
+}
+$details[] = [
+    'label' => get_string('site', LOCAL_DTEACHWHITEBOARD),
+    'value' => $status['site_url'] ?? $CFG->wwwroot,
+];
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('subscription', LOCAL_DTEACHWHITEBOARD));
 
 $buttons = [];
 if ($state === 'not_connected') {
@@ -150,19 +176,41 @@ if ($state === 'not_connected') {
     );
 }
 
-echo html_writer::start_div('d-flex gap-2 mb-3');
+// Both spacing sets are emitted so the row breathes on Bootstrap 4 (4.2) and 5 (5.0) alike.
+$actions = '';
 foreach ($buttons as $button) {
-    echo $OUTPUT->render($button);
+    $actions .= html_writer::div($OUTPUT->render($button), 'mr-2 me-2');
 }
-echo html_writer::link(
+$actions .= html_writer::link(
+    LOCAL_DTEACHWHITEBOARD_HOMEPAGE,
+    get_string('learnmore', LOCAL_DTEACHWHITEBOARD),
+    ['class' => 'btn btn-link', 'target' => '_blank', 'rel' => 'noopener noreferrer']
+);
+$actions .= html_writer::link(
     'mailto:' . LOCAL_DTEACHWHITEBOARD_CONTACT,
     get_string('contactus', LOCAL_DTEACHWHITEBOARD),
-    ['class' => 'btn btn-secondary']
+    ['class' => 'btn btn-link']
 );
-echo html_writer::end_div();
 
-if ($state === 'trial' || $state === 'paid') {
-    echo $OUTPUT->notification(get_string('toolready', LOCAL_DTEACHWHITEBOARD), \core\output\notification::NOTIFY_INFO);
+$steps = [];
+if ($state === 'not_connected') {
+    $steps = [
+        get_string('connectstep1', LOCAL_DTEACHWHITEBOARD),
+        get_string('connectstep2', LOCAL_DTEACHWHITEBOARD),
+        get_string('connectstep3', LOCAL_DTEACHWHITEBOARD),
+    ];
 }
 
+echo $OUTPUT->render_from_template('local_dteachwhiteboard/subscription', [
+    'statelabel' => $statelabel,
+    'statevariant' => $statevariant,
+    'summary' => $summary,
+    'details' => $details,
+    'toolready' => $state === 'trial' || $state === 'paid'
+        ? get_string('toolready', LOCAL_DTEACHWHITEBOARD)
+        : '',
+    'connectsteps' => $steps === [] ? '' : get_string('connectsteps', LOCAL_DTEACHWHITEBOARD),
+    'steps' => $steps,
+    'actions' => $actions,
+]);
 echo $OUTPUT->footer();
