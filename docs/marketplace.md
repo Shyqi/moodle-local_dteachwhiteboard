@@ -32,9 +32,9 @@ plugin record and the README to carry the same description.
 > **Installation**
 >
 > Install the plugin, then go to *Site administration → Plugins → Local plugins →
-> Collaborative Whiteboard → Your subscription* and start the free trial. The page runs
-> LTI 1.3 Dynamic Registration for you and activates the tool in the activity chooser.
-> There is nothing else to configure.
+> Collaborative Whiteboard → Your subscription* and paste the licence key that came with
+> your order. The page runs LTI 1.3 Dynamic Registration for you and activates the tool in
+> the activity chooser. There is nothing else to configure.
 >
 > **Requirements**
 >
@@ -42,10 +42,10 @@ plugin record and the README to carry the same description.
 >
 > **Subscription**
 >
-> The plugin is free and GPL v3, but the whiteboard itself is a hosted service run by
-> dteach. Every site starts on a free trial; once it ends, a paid plan is needed for
-> teachers to keep opening whiteboards. Plans are bought from the *Your subscription* page
-> and billed by dteach, not through Moodle.
+> The plugin is GPL v3, but the whiteboard itself is a hosted service run by dteach. Your
+> purchase here sends a licence key, which activates one site from the *Your subscription*
+> page. When the subscription ends, teachers can no longer open a whiteboard and the tool
+> leaves the activity chooser; the boards already drawn are kept.
 >
 > **Privacy**
 >
@@ -63,10 +63,11 @@ real-looking course name, and no test data visible.
    collaboration reads at a glance.
 2. **Activity chooser** — the modal with the Whiteboard entry visible among the core
    activities. Shows an admin exactly what their teachers will see after install.
-3. **Your subscription, trial state** — the admin page with the Trial badge, plan name,
+3. **Your subscription, active plan** — the admin page with the Active badge, plan name,
    end date, and "Whiteboard is active and available in the activity chooser."
-4. **Your subscription, not connected** — the first-run state with the two buttons and the
-   "What happens when you start" steps. Answers "what do I have to do to install this?".
+4. **Your subscription, not connected** — the first-run state with the licence key field
+   and the "What happens when you activate" steps. Answers "what do I have to do to
+   install this?".
 
 ## Listing fields
 

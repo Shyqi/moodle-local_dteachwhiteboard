@@ -30,21 +30,34 @@ class client {
     /** @var string Service base URL, without its trailing slash. */
     private $serviceurl;
 
+    /** @var \curl Transport every call goes through. */
+    private $curl;
+
     /**
      * Build a client from the plugin settings.
+     *
+     * @param \curl|null $curl transport to use, a fresh one when not given
      */
-    public function __construct() {
+    public function __construct(?\curl $curl = null) {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
         $this->serviceurl = rtrim((string) get_config('local_dteachwhiteboard', 'serviceurl'), '/');
+        $this->curl = $curl ?? new \curl();
     }
 
     /**
-     * Claim the token this site keeps for every later call.
+     * Spend the licence key on this site, claiming the token it keeps for every later call.
      *
      * @param string $siteurl wwwroot of this Moodle
+     * @param string $licencekey key the buyer was sent with their order
      * @return array the issued invite, including its registration_url
      */
-    public function issue_token(string $siteurl): array {
-        return $this->request('POST', '/api/lti/draw/invites/', ['site_url' => $siteurl], null);
+    public function issue_token(string $siteurl, string $licencekey): array {
+        return $this->request('POST', '/api/lti/draw/invites/', [
+            'site_url' => $siteurl,
+            'licence_key' => $licencekey,
+        ], null);
     }
 
     /**
@@ -58,36 +71,6 @@ class client {
     }
 
     /**
-     * Stripe Checkout for the monthly plan.
-     *
-     * @param string $token
-     * @param string $successurl where Stripe returns on success
-     * @param string $cancelurl where Stripe returns on cancellation
-     * @return string the URL to send the admin to
-     */
-    public function checkout_url(string $token, string $successurl, string $cancelurl): string {
-        $response = $this->request('POST', '/api/lti/draw/checkout-session/', [
-            'success_url' => $successurl,
-            'cancel_url' => $cancelurl,
-        ], $token);
-        return $response['url'];
-    }
-
-    /**
-     * Stripe Customer Portal for a subscription paid by card.
-     *
-     * @param string $token
-     * @param string $returnurl where Stripe returns when the admin is done
-     * @return string the URL to send the admin to
-     */
-    public function portal_url(string $token, string $returnurl): string {
-        $response = $this->request('POST', '/api/lti/draw/portal-session/', [
-            'return_url' => $returnurl,
-        ], $token);
-        return $response['url'];
-    }
-
-    /**
      * Issue one call and decode its JSON body.
      *
      * @param string $method
@@ -98,9 +81,6 @@ class client {
      * @throws service_exception when the service answers anything but a 2xx JSON object
      */
     private function request(string $method, string $path, ?array $body, ?string $token): array {
-        global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
         $headers = ['Accept: application/json'];
         if ($token !== null) {
             $headers[] = 'Authorization: Bearer ' . $token;
@@ -109,22 +89,27 @@ class client {
             $headers[] = 'Content-Type: application/json';
         }
 
-        $curl = new \curl();
-        $curl->setHeader($headers);
+        // The same transport serves both calls of a page load, and headers pile up.
+        $this->curl->resetHeader();
+        $this->curl->setHeader($headers);
         $options = ['CURLOPT_TIMEOUT' => self::TIMEOUT, 'CURLOPT_CONNECTTIMEOUT' => self::TIMEOUT];
         $url = $this->serviceurl . $path;
         if ($method === 'GET') {
-            $response = $curl->get($url, [], $options);
+            $response = $this->curl->get($url, [], $options);
         } else {
-            $response = $curl->post($url, json_encode($body), $options);
+            $response = $this->curl->post($url, json_encode($body), $options);
         }
 
-        $code = (int) ($curl->get_info()['http_code'] ?? 0);
+        $code = (int) ($this->curl->get_info()['http_code'] ?? 0);
         $decoded = json_decode((string) $response, true);
         if ($code < 200 || $code >= 300 || !is_array($decoded)) {
-            $servicecode = is_array($decoded) ? (string) ($decoded['code'] ?? '') : '';
-            $detail = is_array($decoded) ? ($decoded['detail'] ?? '') : $curl->error;
-            throw new service_exception($servicecode, (string) ($detail ?: $code));
+            $servicecode = '';
+            $detail = (string) $this->curl->error;
+            if (is_array($decoded)) {
+                $servicecode = is_string($decoded['code'] ?? null) ? $decoded['code'] : '';
+                $detail = is_string($decoded['detail'] ?? null) ? $decoded['detail'] : '';
+            }
+            throw new service_exception($servicecode, $detail ?: (string) $code);
         }
         return $decoded;
     }

@@ -12,8 +12,8 @@ visit *Site administration → Notifications*.
 ## Set up
 
 *Site administration → Plugins → Local plugins → Collaborative Whiteboard → Your
-subscription*, then start the free trial. The page walks the LMS through
-registration and shows the plan afterwards.
+subscription*, then paste the licence key that came with your Moodle Marketplace
+order. The page walks the LMS through registration and shows the plan afterwards.
 
 Nothing else to configure. LTI Dynamic Registration always leaves a tool pending,
 shown only as a preconfigured tool and launched in an embed; the plugin activates
@@ -25,10 +25,11 @@ Moodle 4.2 or later, with LTI 1.3 Dynamic Registration.
 
 ## Subscription
 
-This plugin is free and GPL, but the whiteboard itself is a hosted service run by
-dteach. Every site starts on a free trial; once it ends, a paid plan is needed for
-teachers to keep opening whiteboards. Plans are bought from the *Your subscription*
-page and billed by dteach, not through Moodle.
+The plugin is GPL v3, but the whiteboard itself is a hosted service run by dteach.
+Access is bought on the Moodle Marketplace listing, which sends a licence key. The
+plugin does nothing but activate that key: one key opens one site. When the
+subscription ends, teachers can no longer open a whiteboard and the tool leaves the
+activity chooser; the boards already drawn are kept.
 
 ## Privacy
 
