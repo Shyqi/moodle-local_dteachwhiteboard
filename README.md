@@ -26,7 +26,7 @@ Moodle 4.2 or later, with LTI 1.3 Dynamic Registration.
 ## Subscription
 
 The plugin is GPL v3, but the whiteboard itself is a hosted service run by dteach.
-Access is bought on the Moodle Marketplace listing, which sends a licence key. The
+Access is bought on the [Moodle Marketplace listing](https://marketplace.moodle.com/plugins/4045), which sends a licence key. The
 plugin does nothing but activate that key: one key opens one site. When the
 subscription ends, teachers can no longer open a whiteboard and the tool leaves the
 activity chooser; the boards already drawn are kept.

@@ -1,6 +1,6 @@
 # Moodle Marketplace listing
 
-Source text for the plugin's public page on [marketplace.moodle.com](https://marketplace.moodle.com).
+Source text for the plugin's public page, [Collaborative Whiteboard](https://marketplace.moodle.com/plugins/4045).
 Nothing here is read by Moodle — the listing is filled in by hand in the Marketplace
 submission form, as the last step before publication. Keep this file and
 [README.md](../README.md) saying the same thing: the contribution checklist asks for the

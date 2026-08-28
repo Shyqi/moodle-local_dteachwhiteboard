@@ -35,8 +35,8 @@ const LOCAL_DTEACHWHITEBOARD = 'local_dteachwhiteboard';
 /** Where the "Contact us" button writes to. */
 const LOCAL_DTEACHWHITEBOARD_CONTACT = 'contact@dteach.net';
 
-/** Marketplace listing the whiteboard is bought from. Placeholder until the listing is published. */
-const LOCAL_DTEACHWHITEBOARD_LISTING = 'https://marketplace.moodle.com/';
+/** Marketplace listing the whiteboard is bought from. */
+const LOCAL_DTEACHWHITEBOARD_LISTING = 'https://marketplace.moodle.com/plugins/4045';
 
 admin_externalpage_setup('local_dteachwhiteboard_subscription');
 
