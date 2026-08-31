@@ -61,6 +61,33 @@ class client {
     }
 
     /**
+     * Open this site's free trial, which needs no order and no key.
+     *
+     * @param string $siteurl wwwroot of this Moodle
+     * @param string $contactemail where the service reaches the admin who opened the trial
+     * @return array the issued invite, including its registration_url
+     */
+    public function start_trial(string $siteurl, string $contactemail): array {
+        return $this->request('POST', '/api/lti/draw/invites/', [
+            'site_url' => $siteurl,
+            'contact_email' => $contactemail,
+        ], null);
+    }
+
+    /**
+     * Spend a licence key on a site that is already connected, typically one still on trial.
+     *
+     * @param string $token token this site was issued
+     * @param string $licencekey key the buyer was sent with their order
+     * @return array the subscription state the key leaves the site in
+     */
+    public function claim_licence(string $token, string $licencekey): array {
+        return $this->request('POST', '/api/lti/draw/licence/', [
+            'licence_key' => $licencekey,
+        ], $token);
+    }
+
+    /**
      * Connection and plan state behind a token.
      *
      * @param string $token

@@ -38,6 +38,7 @@ class provider implements metadata_provider, null_provider {
         $collection->add_external_location_link('dteachwhiteboard', [
             'siteurl' => 'privacy:metadata:dteachwhiteboard:siteurl',
             'licencekey' => 'privacy:metadata:dteachwhiteboard:licencekey',
+            'contactemail' => 'privacy:metadata:dteachwhiteboard:contactemail',
         ], 'privacy:metadata:dteachwhiteboard');
 
         return $collection;

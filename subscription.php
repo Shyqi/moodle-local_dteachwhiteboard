@@ -46,6 +46,7 @@ $client = new client();
 $token = (string) get_config(LOCAL_DTEACHWHITEBOARD, 'token');
 $licencekey = (string) get_config(LOCAL_DTEACHWHITEBOARD, 'licencekey');
 $pendingkey = '';
+$pendingemail = '';
 $error = '';
 $warning = '';
 
@@ -70,8 +71,31 @@ if ($action === 'activate') {
     }
 }
 
+if ($action === 'trial') {
+    $pendingemail = optional_param('contactemail', '', PARAM_EMAIL);
+    if ($pendingemail === '') {
+        $error = get_string('contactemailrequired', LOCAL_DTEACHWHITEBOARD);
+    }
+}
+
 $status = null;
-if ($pendingkey === '' && $token !== '') {
+
+// A site on trial buys without registering again: it is connected already, only its plan moves.
+if ($action === 'claim') {
+    $claimkey = optional_param('licencekey', '', PARAM_ALPHANUM);
+    if ($claimkey === '') {
+        $error = get_string('licencekeyrequired', LOCAL_DTEACHWHITEBOARD);
+    } else {
+        try {
+            $status = $client->claim_licence($token, $claimkey);
+            set_config('licencekey', $claimkey, LOCAL_DTEACHWHITEBOARD);
+        } catch (service_exception $e) {
+            $error = $e->getMessage();
+        }
+    }
+}
+
+if ($status === null && $pendingkey === '' && $pendingemail === '' && $token !== '') {
     try {
         $status = $client->status($token);
     } catch (service_exception $e) {
@@ -83,17 +107,22 @@ if ($pendingkey === '' && $token !== '') {
         unset_config('token', LOCAL_DTEACHWHITEBOARD);
         unset_config('registrationurl', LOCAL_DTEACHWHITEBOARD);
         $warning = get_string('tokenrejected', LOCAL_DTEACHWHITEBOARD);
+        // A trial holds no key to spend again, so its site is asked for its email once more.
         $pendingkey = $licencekey;
     }
 }
 
-if ($pendingkey !== '') {
+if ($pendingkey !== '' || $pendingemail !== '') {
     try {
-        $invite = $client->issue_token($CFG->wwwroot, $pendingkey);
-        set_config('licencekey', $pendingkey, LOCAL_DTEACHWHITEBOARD);
+        if ($pendingkey !== '') {
+            $invite = $client->issue_token($CFG->wwwroot, $pendingkey);
+            set_config('licencekey', $pendingkey, LOCAL_DTEACHWHITEBOARD);
+        } else {
+            $invite = $client->start_trial($CFG->wwwroot, $pendingemail);
+        }
         set_config('token', $invite['token'], LOCAL_DTEACHWHITEBOARD);
         set_config('registrationurl', $invite['registration_url'], LOCAL_DTEACHWHITEBOARD);
-        if ($action === 'activate') {
+        if ($action === 'activate' || $action === 'trial') {
             redirect(new moodle_url('/mod/lti/startltiadvregistration.php', [
                 'url' => $invite['registration_url'],
                 'sesskey' => sesskey(),
@@ -122,6 +151,10 @@ if ($state === 'paid') {
     $summary = $daysleft === null
         ? get_string('paidrunning', LOCAL_DTEACHWHITEBOARD)
         : get_string('paiddaysleft', LOCAL_DTEACHWHITEBOARD, $daysleft);
+} else if ($state === 'trial') {
+    $statelabel = get_string('statetrial', LOCAL_DTEACHWHITEBOARD);
+    $statevariant = 'info';
+    $summary = get_string('trialdaysleft', LOCAL_DTEACHWHITEBOARD, $daysleft);
 } else if ($state === 'expired') {
     $statelabel = get_string('stateexpired', LOCAL_DTEACHWHITEBOARD);
     $statevariant = 'warning';
@@ -133,6 +166,9 @@ if ($state === 'paid') {
         ? get_string('notconnected', LOCAL_DTEACHWHITEBOARD)
         : get_string('registrationpending', LOCAL_DTEACHWHITEBOARD);
 }
+
+// A site holding a token spends a key on it; only a fresh install buys its token with one.
+$keyaction = get_config(LOCAL_DTEACHWHITEBOARD, 'token') ? 'claim' : 'activate';
 
 $details = [];
 if (!empty($status['plan']['name'])) {
@@ -171,11 +207,12 @@ if ($state === 'not_connected' && $registrationurl !== '') {
         single_button::BUTTON_PRIMARY
     )), 'mr-2 me-2');
 }
+$buying = $state === 'expired' || $state === 'trial';
 $actions .= html_writer::link(
     LOCAL_DTEACHWHITEBOARD_LISTING,
     get_string('viewlisting', LOCAL_DTEACHWHITEBOARD),
     [
-        'class' => 'btn ' . ($state === 'expired' ? 'btn-primary' : 'btn-link'),
+        'class' => 'btn ' . ($buying ? 'btn-primary' : 'btn-link'),
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
     ]
@@ -187,7 +224,7 @@ $actions .= html_writer::link(
 );
 
 $steps = [];
-if ($state === 'not_connected') {
+if ($state === 'not_connected' && $registrationurl === '') {
     $steps = [
         get_string('connectstep1', LOCAL_DTEACHWHITEBOARD),
         get_string('connectstep2', LOCAL_DTEACHWHITEBOARD),
@@ -201,13 +238,23 @@ echo $OUTPUT->render_from_template('local_dteachwhiteboard/subscription', [
     'summary' => $summary,
     'details' => $details,
     'toolready' => $state === 'paid' ? get_string('toolready', LOCAL_DTEACHWHITEBOARD) : '',
-    'keyform' => $state === 'not_connected' && $registrationurl === '' ? [
+    'trialform' => $state === 'not_connected' && $registrationurl === '' ? [
         'formurl' => $pageurl->out(false),
         'sesskey' => sesskey(),
+        'label' => get_string('contactemail', LOCAL_DTEACHWHITEBOARD),
+        'help' => get_string('contactemailhelp', LOCAL_DTEACHWHITEBOARD),
+        'value' => $USER->email,
+        'submit' => get_string('starttrial', LOCAL_DTEACHWHITEBOARD),
+    ] : false,
+    'keyform' => $state === 'paid' ? false : [
+        'formurl' => $pageurl->out(false),
+        'sesskey' => sesskey(),
+        'action' => $keyaction,
+        'title' => get_string('havekey', LOCAL_DTEACHWHITEBOARD),
         'label' => get_string('licencekey', LOCAL_DTEACHWHITEBOARD),
         'help' => get_string('licencekeyhelp', LOCAL_DTEACHWHITEBOARD),
         'submit' => get_string('activate', LOCAL_DTEACHWHITEBOARD),
-    ] : false,
+    ],
     'connectsteps' => $steps === [] ? '' : get_string('connectsteps', LOCAL_DTEACHWHITEBOARD),
     'steps' => $steps,
     'actions' => $actions,
