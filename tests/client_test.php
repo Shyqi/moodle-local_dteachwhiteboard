@@ -63,6 +63,46 @@ final class client_test extends \advanced_testcase {
     }
 
     /**
+     * A trial buys its invite with an email address instead of a key.
+     */
+    public function test_start_trial_sends_the_contact_email(): void {
+        $curl = new mock_curl(201, json_encode([
+            'token' => 'tok',
+            'registration_url' => 'https://service.test/api/lti/register/tok/',
+        ]));
+
+        $invite = (new client($curl))->start_trial('https://moodle.test', 'admin@moodle.test');
+
+        $this->assertSame('tok', $invite['token']);
+        $call = $curl->calls[0];
+        $this->assertSame('POST', $call['method']);
+        $this->assertSame('https://service.test/api/lti/draw/invites/', $call['url']);
+        $this->assertSame(
+            ['site_url' => 'https://moodle.test', 'contact_email' => 'admin@moodle.test'],
+            json_decode($call['params'], true)
+        );
+    }
+
+    /**
+     * Buying during a trial spends the key on the token this site already holds.
+     */
+    public function test_claim_licence_spends_the_key_on_the_site_token(): void {
+        $curl = new mock_curl(200, json_encode([
+            'state' => 'paid',
+            'plan' => ['slug' => 'lti_draw_paid_monthly'],
+        ]));
+
+        $status = (new client($curl))->claim_licence('tok', 'abcdef');
+
+        $this->assertSame('paid', $status['state']);
+        $call = $curl->calls[0];
+        $this->assertSame('POST', $call['method']);
+        $this->assertSame('https://service.test/api/lti/draw/licence/', $call['url']);
+        $this->assertSame(['licence_key' => 'abcdef'], json_decode($call['params'], true));
+        $this->assertContains('Authorization: Bearer tok', $call['header']);
+    }
+
+    /**
      * Every later call is authenticated by the token the invite left behind.
      */
     public function test_status_sends_the_site_token(): void {
@@ -112,6 +152,27 @@ final class client_test extends \advanced_testcase {
             $this->fail('The client should have refused a stale token.');
         } catch (service_exception $e) {
             $this->assertSame('invalid_token', $e->servicecode);
+        }
+    }
+
+    /**
+     * A trial asked for without an email comes back as its own sentence too.
+     */
+    public function test_a_trial_without_an_email_carries_its_code(): void {
+        $curl = new mock_curl(400, json_encode([
+            'code' => 'contact_email_required',
+            'detail' => 'A trial needs an email address.',
+        ]));
+
+        try {
+            (new client($curl))->start_trial('https://moodle.test', '');
+            $this->fail('The client should have refused a trial without an email.');
+        } catch (service_exception $e) {
+            $this->assertSame('contact_email_required', $e->servicecode);
+            $this->assertSame(
+                get_string('errorcontactemailrequired', 'local_dteachwhiteboard'),
+                $e->getMessage()
+            );
         }
     }
 
