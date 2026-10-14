@@ -25,9 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_dteachwhiteboard';
-$plugin->version = 2026083100;
+$plugin->version = 2026101400;
 // Moodle 4.2, the first release with single_button::BUTTON_PRIMARY.
 $plugin->requires = 2023042400;
 $plugin->supported = [402, 502];
+$plugin->dependencies = ['mod_lti' => ANY_VERSION];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '0.2.0';
+$plugin->release = '0.2.1';
