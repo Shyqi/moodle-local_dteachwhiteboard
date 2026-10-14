@@ -1,7 +1,7 @@
 # Moodle Marketplace listing
 
 Source text for the plugin's public page, [Collaborative Whiteboard](https://marketplace.moodle.com/plugins/4045).
-Nothing here is read by Moodle — the listing is filled in by hand in the Marketplace
+Moodle reads nothing here. The listing is filled in by hand in the Marketplace
 submission form, as the last step before publication. Keep this file and
 [README.md](../README.md) saying the same thing: the contribution checklist asks for the
 plugin record and the README to carry the same description.
@@ -17,8 +17,8 @@ plugin record and the README to carry the same description.
 > **Collaborative Whiteboard** puts a live, shared canvas inside any Moodle course.
 >
 > A teacher adds a whiteboard from the activity chooser like any other activity. Everyone
-> enrolled opens the same canvas and draws on it together, in real time — sketching a
-> proof, annotating a diagram, running a group brainstorm. The board is persistent: close
+> enrolled opens the same canvas and draws on it together, in real time to sketch a
+> proof, annotate a diagram or run a group brainstorm. The board is persistent: close
 > it, come back next week, and the work is exactly where it was left.
 >
 > **Features**
@@ -58,14 +58,14 @@ plugin record and the README to carry the same description.
 The Marketplace shows these in order, so shoot them in this order. Use a demo site with a
 real-looking course name, and no test data visible.
 
-1. **Whiteboard open in a course** — the hero shot. A board with actual content on it
+1. **Whiteboard open in a course**, the hero shot. A board with actual content on it
    (diagram, handwriting, a couple of shapes) and at least two cursors visible, so the
    collaboration reads at a glance.
-2. **Activity chooser** — the modal with the Whiteboard entry visible among the core
+2. **Activity chooser**: the modal with the Whiteboard entry visible among the core
    activities. Shows an admin exactly what their teachers will see after install.
-3. **Your subscription, active plan** — the admin page with the Active badge, plan name,
+3. **Your subscription, active plan**: the admin page with the Active badge, plan name,
    end date, and "Whiteboard is active and available in the activity chooser."
-4. **Your subscription, not connected** — the first-run state with the licence key field
+4. **Your subscription, not connected**: the first-run state with the licence key field
    and the "What happens when you activate" steps. Answers "what do I have to do to
    install this?".
 
@@ -76,7 +76,7 @@ real-looking course name, and no test data visible.
 | Plugin name | Collaborative Whiteboard |
 | Component | `local_dteachwhiteboard` |
 | Plugin type | Local plugin |
-| Moodle versions | 4.2 – 5.0 |
+| Moodle versions | 4.2 to 5.0 |
 | Licence | GNU GPL v3 or later |
 | Source control | https://github.com/Shyqi/moodle-local_dteachwhiteboard |
 | Bug tracker | https://github.com/Shyqi/moodle-local_dteachwhiteboard/issues |
@@ -85,6 +85,6 @@ real-looking course name, and no test data visible.
 
 ## Still missing before submitting
 
-- `pix/icon.svg` — the plugin icon, used in the admin tree and as the listing logo.
+- `pix/icon.svg`: the plugin icon, used in the admin tree and as the listing logo.
 - The four screenshots above.
 - The `docs.moodle.org` page, if the extended documentation link is kept.

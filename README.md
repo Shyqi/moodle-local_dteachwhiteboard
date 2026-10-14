@@ -38,7 +38,7 @@ tool leaves the activity chooser; the boards already drawn are kept.
 
 The plugin itself stores no personal data. It sends the service the address of your
 site, with the licence key it was given or, for a trial, the email address typed on
-the subscription page — which it sends but never stores. Whiteboards are opened by Moodle's External tool (LTI) module,
+the subscription page, which it sends but never stores. Whiteboards are opened by Moodle's External tool (LTI) module,
 which declares separately what it transmits to the tool.
 
 ## Support
