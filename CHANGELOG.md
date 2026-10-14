@@ -4,6 +4,12 @@ All notable changes to this plugin are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the plugin follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-10-14
+
+### Changed
+
+- The plugin declares its dependency on the External tool (LTI) module, so Moodle refuses to install it on a site where that module is missing.
+
 ## [0.2.0] - 2026-08-31
 
 ### Added
@@ -34,6 +40,7 @@ First release.
 - Automatic activation of the registered tool: Dynamic Registration always leaves it pending and hidden from the activity chooser, so the plugin finishes the job.
 - The tool leaves the activity chooser when the plan ends, and returns when a plan is running again.
 
+[0.2.1]: https://github.com/Shyqi/moodle-local_dteachwhiteboard/releases/tag/v0.2.1
 [0.2.0]: https://github.com/Shyqi/moodle-local_dteachwhiteboard/releases/tag/v0.2.0
 [0.1.1]: https://github.com/Shyqi/moodle-local_dteachwhiteboard/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Shyqi/moodle-local_dteachwhiteboard/releases/tag/v0.1.0
